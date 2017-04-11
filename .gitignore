@@ -1,0 +1,12 @@
+*.sublime-workspace
+
+# Created by https://www.gitignore.io/api/terraform
+
+### Terraform ###
+# Terraform - https://terraform.io/
+.terraform
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+
+# End of https://www.gitignore.io/api/terraform
