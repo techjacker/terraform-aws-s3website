@@ -1,0 +1,10 @@
+[{
+    "Condition": {
+    	"HttpErrorCodeReturnedEquals": "404"
+    },
+    "Redirect": {
+        "Protocol": "https",
+        "HostName": "${target}",
+        "HttpRedirectCode": "301"
+    }
+}]
