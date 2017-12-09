@@ -13,3 +13,7 @@ variable "acm-certificate-arn" {
 variable "domain" {
   default = "example.com"
 }
+
+variable "zone_id" {
+  description = "route53 hosted zone id"
+}
