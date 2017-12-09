@@ -9,7 +9,7 @@ data "aws_iam_policy_document" "s3_website_policy_root" {
     resources = ["arn:aws:s3:::${var.domain}/*"]
     principals {
       type        = "AWS"
-      identifiers = "*"
+      identifiers = ["*"]
     }
   }
 }
@@ -32,7 +32,7 @@ data "aws_iam_policy_document" "s3_website_policy_www" {
     resources = ["arn:aws:s3:::www.${var.domain}/*"]
     principals {
       type        = "AWS"
-      identifiers = "*"
+      identifiers = ["*"]
     }
   }
 }
@@ -59,12 +59,12 @@ data "template_file" "routing_rules" {
 ####################
 # route 53
 ####################
-resource "aws_route53_zone" "website" {
+resource "aws_route53_zone" "main" {
   name = "${var.domain}"
 }
 
 resource "aws_route53_record" "root" {
-  zone_id = "${aws_route53_zone.website.zone_id}"
+  zone_id = "${aws_route53_zone.main.zone_id}"
   name = "${var.domain}"
   type = "A"
   alias {
@@ -75,7 +75,7 @@ resource "aws_route53_record" "root" {
 }
 
 resource "aws_route53_record" "www" {
-  zone_id = "${aws_route53_zone.website.zone_id}"
+  zone_id = "${aws_route53_zone.main.zone_id}"
   name = "www.${var.domain}"
   type = "CNAME"
   ttl = "300"
