@@ -6,8 +6,7 @@ data "aws_iam_policy_document" "s3_website_policy_root" {
   statement {
     actions   = ["s3:GetObject"]
     effect    = "Allow"
-    resources = [join("", ["arn:aws:s3:::", "${var.domain}", "/*"])]
-    # resources = ["arn:aws:s3:::example.com/*"]
+    resources = ["arn:aws:s3:::${var.domain}/*"]
     principals {
       type        = "AWS"
       identifiers = "*"
@@ -30,8 +29,7 @@ data "aws_iam_policy_document" "s3_website_policy_www" {
   statement {
     actions   = ["s3:GetObject"]
     effect    = "Allow"
-    resources = [join("", ["arn:aws:s3:::www.", "${var.domain}", "/*"])]
-    # resources = ["arn:aws:s3:::www.example.com/*"]
+    resources = ["arn:aws:s3:::www.${var.domain}/*"]
     principals {
       type        = "AWS"
       identifiers = "*"
