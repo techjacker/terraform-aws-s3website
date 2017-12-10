@@ -59,12 +59,8 @@ data "template_file" "routing_rules" {
 ####################
 # route 53
 ####################
-resource "aws_route53_zone" "main" {
-  name = "${var.domain}"
-}
-
 resource "aws_route53_record" "root" {
-  zone_id = "${aws_route53_zone.main.zone_id}"
+  zone_id = "${var.zone_id}"
   name = "${var.domain}"
   type = "A"
   alias {
@@ -75,7 +71,7 @@ resource "aws_route53_record" "root" {
 }
 
 resource "aws_route53_record" "www" {
-  zone_id = "${aws_route53_zone.main.zone_id}"
+  zone_id = "${var.zone_id}"
   name = "www.${var.domain}"
   type = "CNAME"
   ttl = "300"
@@ -102,8 +98,7 @@ resource "aws_cloudfront_distribution" "website" {
     enabled = true
     price_class = "PriceClass_200"
     default_root_object = "index.html"
-    # aliases = ["${var.domain}", "www.${var.domain}"]
-    aliases = ["${var.domain}"]
+    aliases = ["${var.domain}", "www.${var.domain}"]
     retain_on_delete = true
     http_version = "http2"
 
