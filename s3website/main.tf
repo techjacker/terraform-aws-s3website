@@ -50,7 +50,7 @@ resource "aws_s3_bucket" "website_www_redirect" {
 
 
 data "template_file" "routing_rules" {
-  template = "${file("s3-website-www-routing.json")}"
+  template = "${file("${path.module}/s3-website-www-routing.json")}"
   vars {
     target = "${var.domain}"
   }
