@@ -51,11 +51,34 @@ module "mx" {
 ```
 
 ### 4. Run terraform
-
 ```Shell
 terraform env new prod
 terraform env select prod
 terraform get
 terraform plan
 terraform apply
-`
+```
+
+### 5. Test
+```Shell
+$ curl -sI http://example.com | grep -E '(301|Server|Location|X-Cache|HTTP)'
+  HTTP/1.1 301 Moved Permanently
+  Server: CloudFront
+  Location: https://example.com/
+  X-Cache: Redirect from cloudfront
+
+$ curl -sI https://example.com | grep -E '(X-Cache|HTTP)'
+  HTTP/1.1 200 OK
+  X-Cache: Hit from cloudfront
+
+$ curl -sI http://www.example.com | grep -E '(301|Server|Location|X-Cache|HTTP)'
+  HTTP/1.1 301 Moved Permanently
+  Server: CloudFront
+  Location: https://www.example.com/
+  X-Cache: Redirect from cloudfront
+
+$ curl -sI https://www.example.com | grep -E '(301|Server|Location|HTTP)'
+  HTTP/1.1 301 Moved Permanently
+  Location: https://example.com/
+  Server: AmazonS3
+```
