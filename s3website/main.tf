@@ -64,8 +64,8 @@ resource "aws_route53_record" "root" {
   name = "${var.domain}"
   type = "A"
   alias {
-    name = "${aws_cloudfront_distribution.website.domain_name}"
-    zone_id = "Z2FDTNDATAQYW2"
+    name = "${aws_cloudfront_distribution.root.domain_name}"
+    zone_id = "${aws_cloudfront_distribution.root.hosted_zone_id}"
     evaluate_target_health = false
   }
 }
@@ -73,15 +73,18 @@ resource "aws_route53_record" "root" {
 resource "aws_route53_record" "www" {
   zone_id = "${var.zone_id}"
   name = "www.${var.domain}"
-  type = "CNAME"
-  ttl = "300"
-  records = ["www.${var.domain}.s3-website-${data.aws_region.current.name}.amazonaws.com"]
+  type = "A"
+  alias {
+    name = "${aws_cloudfront_distribution.root.domain_name}"
+    zone_id = "${aws_cloudfront_distribution.root.hosted_zone_id}"
+    evaluate_target_health = false
+  }
 }
 
 ####################
 # cloudfront
 ####################
-resource "aws_cloudfront_distribution" "website" {
+resource "aws_cloudfront_distribution" "root" {
     origin {
         custom_origin_config {
             http_port = 80,
@@ -97,7 +100,7 @@ resource "aws_cloudfront_distribution" "website" {
 
     enabled = true
     price_class = "PriceClass_200"
-    default_root_object = "index.html"
+    # default_root_object = "index.html"
     aliases = ["${var.domain}", "www.${var.domain}"]
     retain_on_delete = true
     http_version = "http2"
@@ -138,4 +141,3 @@ resource "aws_cloudfront_distribution" "website" {
         minimum_protocol_version = "TLSv1"
     }
 }
-
