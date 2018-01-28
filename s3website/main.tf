@@ -77,6 +77,7 @@ resource "aws_cloudfront_distribution" "website" {
     # http://example.com.s3-website-eu-west-1.amazonaws.com/
     # https://s3-eu-west-1.amazonaws.com/example.com/index.html
     domain_name = "${element(local.website_endpoints, count.index)}"
+
     origin_id = "S3-${element(local.domains, count.index)}"
 
     custom_origin_config {
@@ -112,6 +113,7 @@ resource "aws_cloudfront_distribution" "website" {
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400
+
     # default_ttl            = 86400
     # max_ttl                = 31536000
   }
