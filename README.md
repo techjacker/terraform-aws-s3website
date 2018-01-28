@@ -53,7 +53,7 @@ terraform env select prod
 terraform get
 terraform plan
 terraform apply
-`
+```
 
 
 ### 6. Test
