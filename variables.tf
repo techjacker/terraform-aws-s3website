@@ -1,8 +1,6 @@
-# data "aws_region" "current" {
-#   current = true
-# }
-
-# http://example.com.s3-website-eu-west-1.amazonaws.com/
+####################
+# S3Website module
+####################
 variable "domain" {
   description = "The domain where to host the site. This must be the naked domain, e.g. `example.com`"
 }
@@ -28,3 +26,14 @@ variable "enable_gzip" {
   default     = true
   description = "Whether to make CloudFront automatically compress content for web requests that include `Accept-Encoding: gzip` in the request header"
 }
+
+####################
+# MX module
+####################
+variable "mx" {
+  type = "list"
+}
+
+variable "mx_spf" {}
+variable "mx_dkim" {}
+variable "mx_dmarc" {}

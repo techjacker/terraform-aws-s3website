@@ -3,28 +3,24 @@
 
 ## Example Usage
 
-### 1. Update `.env` file values
 
+### 1. Update `.env` file values
 ```Shell
 DOMAIN="example.com"
 ```
 
+
 ### 2. Create TLS certificate
-
 ```Shell
-./aws-tls-certificate.sh
+./bin/aws-tls-certificate.sh
 ```
 
-### 3. Update `variables.tf` with acm-certificate-arn
-```HCL
-# created manually with aws-tls-certificate.sh script
-variable "acm-certificate-arn" {
-  # default = ""
-}
-```
+
+### 3. Confirm ownership of domain to activate the TLS Certificate
+Click on the link AWS will email to you to verify ownership of the domain and activate the certificate.
+
 
 ### 4. Update terraform `main.tf` to include modules from this repo
-
 ```HCL
 module "dnszone" {
   source    = "git@github.com:techjacker/terraform//dnszone"
@@ -34,8 +30,6 @@ module "dnszone" {
 module "s3website" {
   source    			 = "git@github.com:techjacker/terraform//s3website"
   domain    			 = "${var.domain}"
-  # created manually with aws-tls-certificate.sh script
-  acm-certificate-arn    = "${var.acm-certificate-arn}"
   zone_id   			 = "${module.dnszone.zone_id}"
 }
 
@@ -50,7 +44,8 @@ module "mx" {
 }
 ```
 
-### 4. Run terraform
+
+### 5. Run terraform
 
 ```Shell
 terraform env new prod

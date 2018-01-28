@@ -6,6 +6,7 @@ output "name_servers" {
     "${aws_route53_zone.main.name_servers.3}",
   ]
 }
+
 output "zone_id" {
   value = "${aws_route53_zone.main.id}"
 }

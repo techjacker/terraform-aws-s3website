@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+. '.env'
+
+if [[ -z $DOMAIN ]]; then
+	echo "Must specify bucket/domain in .env file."
+	echo "Exiting..."
+	exit 1
+fi
+
+aws acm request-certificate \
+	--region "$REGION" \
+	--domain-name "*.$DOMAIN" \
+	--subject-alternative-names "$DOMAIN"
+
+aws acm list-certificates --region "$REGION"
+# aws acm describe-certificate --certificate-arn <ARN>
+
+# https://www.cloudconformity.com/conformity-rules/ACM/certificate-validity.html
+echo "WARNING! The TLS Certificate is not valid until you click on the confirmation link AWS will email to the hostmaster for $DOMAIN"
+echo "Check admin@$DOMAIN mailbox and junk folder for the AWS confirmation email"
+echo "Then run aws acm describe-certificate --certificate-arn <ARN> to check the status of the certificate. It should be 'ISSUED'"

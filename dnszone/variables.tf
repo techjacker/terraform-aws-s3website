@@ -1,3 +1,3 @@
 variable "domain" {
-	description = "route53 hosted zone domain name"
+  description = "route53 hosted zone domain name"
 }

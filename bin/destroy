@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -e
+CURRENT_DIR=$PWD
+
+# run infrastructure update
+cd $INFRA_DIR || exit 1
+if [[ ! -d .terraform ]]; then
+	terraform init
+fi
+# if ! terraform env list 2>&1 | grep -qi "$ENVIRONMENT"; then
+# 	terraform env new "$ENVIRONMENT"
+# fi
+# terraform env select "$ENVIRONMENT"
+
+terraform destroy \
+	-var "domain=$DOMAIN"
+
+cd "$CURRENT_DIR" || exit 1

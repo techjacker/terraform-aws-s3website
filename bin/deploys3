@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+. '.env'
+
+if [[ -z $DOMAIN ]]; then
+	echo "Must specify bucket/domain in .env file."
+	echo "Exiting..."
+	exit 1
+fi
+
+aws s3 sync \
+	"$DIST_DIR/" "s3://$DOMAIN/"
