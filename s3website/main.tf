@@ -21,23 +21,9 @@ locals {
 # s3
 # http://example.com.s3-website-eu-west-1.amazonaws.com/
 ####################
-data "aws_iam_policy_document" "s3_website_policy_root" {
-  statement {
-    actions   = ["s3:GetObject"]
-    effect    = "Allow"
-    resources = ["arn:aws:s3:::${var.domain}/*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-  }
-}
-
 resource "aws_s3_bucket" "main" {
   bucket = "${var.domain}"
-   acl = "public-read"
-policy = "${data.aws_iam_policy_document.s3_website_policy_root.json}"
+
   website {
     index_document = "index.html"
     error_document = "404.html"
@@ -91,7 +77,6 @@ resource "aws_cloudfront_distribution" "website" {
     # http://example.com.s3-website-eu-west-1.amazonaws.com/
     # https://s3-eu-west-1.amazonaws.com/example.com/index.html
     domain_name = "${element(local.website_endpoints, count.index)}"
-
     origin_id = "S3-${element(local.domains, count.index)}"
 
     custom_origin_config {
@@ -127,7 +112,6 @@ resource "aws_cloudfront_distribution" "website" {
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400
-
     # default_ttl            = 86400
     # max_ttl                = 31536000
   }

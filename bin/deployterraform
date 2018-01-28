@@ -22,6 +22,7 @@ cd $INFRA_DIR || exit 1
 # terraform env select "$ENVIRONMENT"
 
 terraform apply \
+	-auto-approve \
 	-var "domain=$DOMAIN"
 
 cd "$CURRENT_DIR" || exit 1
