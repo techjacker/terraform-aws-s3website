@@ -1,4 +1,4 @@
-# Terraform Modules
+# Terraform S3 Website & MX Records Modules
 
 
 ## Example Usage
@@ -20,33 +20,16 @@ DOMAIN="example.com"
 Click on the link AWS will email to you to verify ownership of the domain and activate the certificate.
 
 
-### 4. Update terraform `main.tf` to include modules from this repo
+### 4. Update terraform `variables.tf` file
+The only required variable is the naked domain, eg `example.com`.
 ```HCL
-module "dnszone" {
-  source    = "git@github.com:techjacker/terraform//dnszone"
-  domain    = "${var.domain}"
-}
-
-module "s3website" {
-  source    			 = "git@github.com:techjacker/terraform//s3website"
-  domain    			 = "${var.domain}"
-  zone_id   			 = "${module.dnszone.zone_id}"
-}
-
-module "mx" {
-  source    = "git@github.com:techjacker/terraform//mx"
-  zone_id   = "${module.dnszone.zone_id}"
-  domain    = "${var.domain}"
-  mx        = "${var.mx}"
-  mx_spf    = "${var.mx_spf}"
-  mx_dkim   = "${var.mx_dkim}"
-  mx_dmarc  = "${var.mx_dmarc}"
+variable "domain" {
+  description = "The domain where to host the site. This must be the naked domain, e.g. `example.com`"
 }
 ```
 
 
 ### 5. Run terraform
-
 ```Shell
 terraform env new prod
 terraform env select prod
