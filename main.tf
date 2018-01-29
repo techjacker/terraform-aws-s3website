@@ -6,10 +6,13 @@ module "dnszone" {
 module "s3website" {
   source                        = "./s3website"
   domain                        = "${var.domain}"
+  zone_id                       = "${module.dnszone.zone_id}"
+  cdn_min_ttl                   = "${var.cdn_min_ttl}"
+  cdn_default_ttl               = "${var.cdn_default_ttl}"
+  cdn_max_ttl                   = "${var.cdn_max_ttl}"
   enable_health_check           = "${var.enable_health_check}"
   health_check_alarm_sns_topics = "${var.health_check_alarm_sns_topics}"
   enable_gzip                   = "${var.enable_gzip}"
-  zone_id                       = "${module.dnszone.zone_id}"
 }
 
 module "mx" {

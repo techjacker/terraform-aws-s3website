@@ -21,8 +21,22 @@ locals {
 # s3
 # http://example.com.s3-website-eu-west-1.amazonaws.com/
 ####################
+data "aws_iam_policy_document" "s3_website_policy_www" {
+  statement {
+    actions   = ["s3:GetObject"]
+    effect    = "Allow"
+    resources = ["arn:aws:s3:::${var.domain}/*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+  }
+}
+
 resource "aws_s3_bucket" "main" {
   bucket = "${var.domain}"
+  policy = "${data.aws_iam_policy_document.s3_website_policy_www.json}"
 
   website {
     index_document = "index.html"
@@ -110,12 +124,9 @@ resource "aws_cloudfront_distribution" "website" {
     }
 
     viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 86400
-
-    # default_ttl            = 86400
-    # max_ttl                = 31536000
+    min_ttl                = "${var.cdn_min_ttl}"
+    default_ttl            = "${var.cdn_default_ttl}"
+    max_ttl                = "${var.cdn_max_ttl}"
   }
 
   restrictions {

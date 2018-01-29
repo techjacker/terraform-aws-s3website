@@ -9,6 +9,21 @@ variable "zone_id" {
   description = "route53 hosted zone id"
 }
 
+variable "cdn_min_ttl" {
+  description = "Cloudfront minimum TTL Default = 0 seconds."
+  default     = 0
+}
+
+variable "cdn_default_ttl" {
+  description = "Cloudfront default TTL. Default = 86400 seconds (24 hours)."
+  default     = 86400
+}
+
+variable "cdn_max_ttl" {
+  description = "Cloudfront maximum TTL. Default = 31536000 seconds (365 days)."
+  default     = 31536000
+}
+
 variable "enable_health_check" {
   type        = "string"
   default     = false
