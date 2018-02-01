@@ -1,11 +1,5 @@
 output "name_servers" {
-  value = [
-    "${module.dnszone.name_servers.0}",
-    "${module.dnszone.name_servers.1}",
-    "${module.dnszone.name_servers.2}",
-    "${module.dnszone.name_servers.3}",
-  ]
-
+  value       = "${module.dnszone.name_servers}"
   description = "The AWS Name Servers to plug in to your domain registrar"
 }
 
