@@ -17,8 +17,11 @@ variable "cdn_min_ttl" {
 }
 
 variable "cdn_default_ttl" {
-  description = "Cloudfront default TTL. Default = 86400 seconds (24 hours)."
-  default     = 86400
+  description = "Cloudfront default TTL. Default = 86400 seconds (1 hour)."
+  default     = 3600
+
+  # 1 day
+  # default     = 86400
 }
 
 variable "cdn_max_ttl" {
