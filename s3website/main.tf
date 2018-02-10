@@ -106,7 +106,7 @@ resource "aws_cloudfront_distribution" "website" {
   custom_error_response {
     error_code         = 404
     response_code      = 404
-    response_page_path = "/404"
+    response_page_path = "/404.html"
   }
 
   default_cache_behavior {
