@@ -1,6 +1,7 @@
 provider "aws" {
   alias  = "us-east-1"
   region = "us-east-1"
+  version = "~> 2.0"
 }
 
 locals {
@@ -68,16 +69,56 @@ resource "aws_route53_record" "A" {
   }
 }
 
-data "aws_acm_certificate" "ssl" {
-  provider = "aws.us-east-1"   // this is an AWS requirement
-  domain   = "*.${var.domain}"
-  statuses = ["ISSUED"]
+# https://www.terraform.io/docs/configuration/providers.html#alias-multiple-provider-instances
+# https://www.terraform.io/docs/providers/aws/d/acm_certificate.html
+# data "aws_acm_certificate" "cert" {
+#   provider            = "aws.us-east-1"
+#   # provider = "aws.useast"   // this is an AWS requirement
+#   domain   = "*.${var.domain}"
+#   statuses = ["ISSUED"]
+#   types    = ["AMAZON_ISSUED"]
+#   most_recent = true
+# }
+
+# https://www.terraform.io/docs/providers/aws/r/acm_certificate.html
+resource "aws_acm_certificate" "cert" {
+  provider            = "aws.us-east-1"
+  domain_name       = "*.${var.domain}"
+  subject_alternative_names = ["${var.domain}"]
+  validation_method = "DNS"
+
+  tags = {
+    Environment = "test"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
+
+# https://www.terraform.io/docs/providers/aws/r/acm_certificate_validation.html
+resource "aws_route53_record" "cert_validation" {
+  depends_on          = ["aws_acm_certificate.cert"]
+  name    = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_name}"
+  type    = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_type}"
+  zone_id = "${var.zone_id}"
+  records = ["${aws_acm_certificate.cert.domain_validation_options.0.resource_record_value}"]
+  ttl     = 60
+}
+
+resource "aws_acm_certificate_validation" "cert" {
+  provider            = "aws.us-east-1"
+  depends_on          = ["aws_acm_certificate.cert"]
+  certificate_arn         = "${aws_acm_certificate.cert.arn}"
+  validation_record_fqdns = ["${aws_route53_record.cert_validation.fqdn}"]
+}
+
 
 ####################
 # cloudfront
 ####################
 resource "aws_cloudfront_distribution" "website" {
+  depends_on          = ["aws_acm_certificate.cert"]
   count               = "${length(local.domains)}"
   enabled             = true
   aliases             = ["${element(local.domains, count.index)}"]
@@ -136,7 +177,7 @@ resource "aws_cloudfront_distribution" "website" {
   }
 
   viewer_certificate {
-    acm_certificate_arn      = "${data.aws_acm_certificate.ssl.arn}"
+    acm_certificate_arn      = "${aws_acm_certificate.cert.arn}"
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1"
   }
