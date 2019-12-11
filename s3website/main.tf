@@ -108,7 +108,7 @@ resource "aws_route53_record" "cert_validation" {
 
 resource "aws_acm_certificate_validation" "cert" {
   provider            = "aws.us-east-1"
-  depends_on          = ["aws_acm_certificate.cert"]
+  depends_on          = ["aws_acm_certificate.cert", "aws_route53_record.cert_validation"]
   certificate_arn         = "${aws_acm_certificate.cert.arn}"
   validation_record_fqdns = ["${aws_route53_record.cert_validation.fqdn}"]
 }
@@ -118,7 +118,7 @@ resource "aws_acm_certificate_validation" "cert" {
 # cloudfront
 ####################
 resource "aws_cloudfront_distribution" "website" {
-  depends_on          = ["aws_acm_certificate.cert"]
+  depends_on          = ["aws_acm_certificate_validation.cert"]
   count               = "${length(local.domains)}"
   enabled             = true
   aliases             = ["${element(local.domains, count.index)}"]
