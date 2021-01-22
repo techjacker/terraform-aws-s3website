@@ -1,7 +1,7 @@
-# module "dnszone" {
-#   source = "./dnszone"
-#   domain = var.domain
-# }
+module "dnszone" {
+  source = "./dnszone"
+  domain = var.domain
+}
 
 module "s3website" {
   source                        = "./s3website"
@@ -15,12 +15,12 @@ module "s3website" {
   enable_gzip                   = var.enable_gzip
 }
 
-# module "mx" {
-#   source   = "./mx"
-#   zone_id  = module.dnszone.zone_id
-#   domain   = var.domain
-#   mx       = var.mx
-#   mx_spf   = var.mx_spf
-#   mx_dkim  = var.mx_dkim
-#   mx_dmarc = var.mx_dmarc
-# }
+module "mx" {
+  source   = "./mx"
+  zone_id  = var.route53_zone_id
+  domain   = var.domain
+  mx       = var.mx
+  mx_spf   = var.mx_spf
+  mx_dkim  = var.mx_dkim
+  mx_dmarc = var.mx_dmarc
+}

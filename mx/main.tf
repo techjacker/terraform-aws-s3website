@@ -3,7 +3,7 @@ resource "aws_route53_record" "mx" {
   name    = var.domain
   type    = "MX"
   ttl     = "300"
-  records = ["${var.mx}"]
+  records = [var.mx]
 }
 
 resource "aws_route53_record" "mx_spf" {
@@ -11,7 +11,7 @@ resource "aws_route53_record" "mx_spf" {
   name    = var.domain
   type    = "TXT"
   ttl     = "300"
-  records = ["${var.mx_spf}"]
+  records = [var.mx_spf]
 }
 
 resource "aws_route53_record" "mx_spf_spf" {
@@ -19,7 +19,7 @@ resource "aws_route53_record" "mx_spf_spf" {
   name    = var.domain
   type    = "SPF"
   ttl     = "300"
-  records = ["${var.mx_spf}"]
+  records = [var.mx_spf]
 }
 
 resource "aws_route53_record" "mx_dkim" {
@@ -27,7 +27,7 @@ resource "aws_route53_record" "mx_dkim" {
   name    = "default._domainkey.${var.domain}"
   type    = "TXT"
   ttl     = "300"
-  records = ["${var.mx_dkim}"]
+  records = [var.mx_dkim]
 }
 
 resource "aws_route53_record" "mx_dmarc" {
@@ -35,5 +35,5 @@ resource "aws_route53_record" "mx_dmarc" {
   name    = "_dmarc.${var.domain}"
   type    = "TXT"
   ttl     = "300"
-  records = ["${var.mx_dmarc}"]
+  records = [var.mx_dmarc]
 }

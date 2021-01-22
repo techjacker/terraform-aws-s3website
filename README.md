@@ -1,7 +1,7 @@
 # Terraform S3 Website & MX Records Modules
 
 ## Domain TLS Certificate
-TLS certificate generation and validation is done via Terraform (ie not by separate bash script).
+TLS certificate generation and validation is done via DNS by Terraform (ie not by separate bash script).
 
 ## Example Usage
 ### Update terraform `variables.tf` file
@@ -10,8 +10,8 @@ TLS certificate generation and validation is done via Terraform (ie not by separ
 variable "domain" {
   description = "The domain where to host the site. This must be the naked domain, e.g. `example.com`"
 }
-variable "route_53_id" {
-  description = "The domain where to host the site. This must be the naked domain, e.g. `example.com`"
+variable "route53_zone_id" {
+  description = "route53 hosted zone id"
 }
 ```
 ### Test
