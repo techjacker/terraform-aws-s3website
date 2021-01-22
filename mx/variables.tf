@@ -7,9 +7,9 @@ variable "domain" {
 }
 
 variable "mx" {
-  type = "list"
+  type = list(string)
 }
 
 variable "mx_spf" {}
-variable "mx_dkim" {}
+variable "mx_txt" {}
 variable "mx_dmarc" {}

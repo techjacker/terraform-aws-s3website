@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-. '.env'
-
 if [[ -z $DOMAIN ]]; then
 	echo "Must specify bucket/domain in .env file."
 	echo "Exiting..."
@@ -32,4 +30,3 @@ aws s3 sync \
 	--exclude "*" \
 	--include "*.html" \
 	"$DIST_DIR/" "s3://$DOMAIN/"
-

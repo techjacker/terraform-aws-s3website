@@ -1,45 +1,20 @@
 # Terraform S3 Website & MX Records Modules
 
+## Domain TLS Certificate
+TLS certificate generation and validation is done via DNS by Terraform (ie not by separate bash script).
 
 ## Example Usage
-
-
-### 1. Update `.env` file values
-```Shell
-DOMAIN="example.com"
-```
-
-
-### 2. Create TLS certificate
-```Shell
-./bin/aws-tls-certificate.sh
-```
-
-
-### 3. Confirm ownership of domain to activate the TLS Certificate
-Click on the link AWS will email to you to verify ownership of the domain and activate the certificate.
-
-
-### 4. Update terraform `variables.tf` file
-The only required variable is the naked domain, eg `example.com`.
+### Update terraform `variables.tf` file
+#### Required variables
 ```HCL
 variable "domain" {
   description = "The domain where to host the site. This must be the naked domain, e.g. `example.com`"
 }
+variable "route53_zone_id" {
+  description = "route53 hosted zone id"
+}
 ```
-
-
-### 5. Run terraform
-```Shell
-terraform env new prod
-terraform env select prod
-terraform get
-terraform plan
-terraform apply
-```
-
-
-### 6. Test
+### Test
 ```Shell
 $ curl -sI http://example.com | grep -E '(301|Server|Location|X-Cache|HTTP)'
   HTTP/1.1 301 Moved Permanently
