@@ -10,6 +10,6 @@ output "name_servers" {
 }
 
 output "zone_id" {
-  value       = "${aws_route53_zone.main.id}"
+  value       = aws_route53_zone.main.id
   description = "The created DNS zone ID"
 }

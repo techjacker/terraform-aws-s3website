@@ -7,7 +7,7 @@ variable "domain" {
 }
 
 variable "mx" {
-  type = "list"
+  type = list(string)
 }
 
 variable "mx_spf" {}

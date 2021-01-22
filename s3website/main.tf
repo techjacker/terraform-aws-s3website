@@ -1,20 +1,20 @@
 provider "aws" {
-  alias  = "us-east-1"
-  region = "us-east-1"
-  version = "~> 2.0"
+  alias   = "us-east-1"
+  region  = "us-east-1"
+  # version = "~> 2.0"
 }
 
 locals {
   www_domain = "www.${var.domain}"
 
   domains = [
-    "${var.domain}",
-    "${local.www_domain}",
+    var.domain,
+    local.www_domain,
   ]
 
   website_endpoints = [
-    "${aws_s3_bucket.main.website_endpoint}",
-    "${aws_s3_bucket.redirect.website_endpoint}",
+    aws_s3_bucket.main.website_endpoint,
+    aws_s3_bucket.redirect.website_endpoint,
   ]
 }
 
@@ -23,8 +23,8 @@ locals {
 # http://example.com.s3-website-eu-west-1.amazonaws.com/
 ####################
 resource "aws_s3_bucket" "main" {
-  bucket = "${var.domain}"
-  policy = "${data.aws_iam_policy_document.s3_website_policy_www.json}"
+  bucket = var.domain
+  policy = data.aws_iam_policy_document.s3_website_policy_www.json
 
   website {
     index_document = "index.html"
@@ -46,10 +46,10 @@ data "aws_iam_policy_document" "s3_website_policy_www" {
 }
 
 resource "aws_s3_bucket" "redirect" {
-  bucket = "${local.www_domain}"
+  bucket = local.www_domain
 
-  website = {
-    redirect_all_requests_to = "${aws_s3_bucket.main.id}"
+  website {
+    redirect_all_requests_to = aws_s3_bucket.main.id
   }
 }
 
@@ -57,35 +57,24 @@ resource "aws_s3_bucket" "redirect" {
 # route 53
 ####################
 resource "aws_route53_record" "A" {
-  count   = "${length(local.domains)}"
-  zone_id = "${var.zone_id}"
-  name    = "${element(local.domains, count.index)}"
+  count   = length(local.domains)
+  zone_id = var.zone_id
+  name    = element(local.domains, count.index)
   type    = "A"
 
   alias {
-    name                   = "${element(aws_cloudfront_distribution.website.*.domain_name, count.index)}"
-    zone_id                = "${element(aws_cloudfront_distribution.website.*.hosted_zone_id, count.index)}"
+    name                   = element(aws_cloudfront_distribution.website.*.domain_name, count.index)
+    zone_id                = element(aws_cloudfront_distribution.website.*.hosted_zone_id, count.index)
     evaluate_target_health = false
   }
 }
 
-# https://www.terraform.io/docs/configuration/providers.html#alias-multiple-provider-instances
-# https://www.terraform.io/docs/providers/aws/d/acm_certificate.html
-# data "aws_acm_certificate" "cert" {
-#   provider            = "aws.us-east-1"
-#   # provider = "aws.useast"   // this is an AWS requirement
-#   domain   = "*.${var.domain}"
-#   statuses = ["ISSUED"]
-#   types    = ["AMAZON_ISSUED"]
-#   most_recent = true
-# }
-
 # https://www.terraform.io/docs/providers/aws/r/acm_certificate.html
 resource "aws_acm_certificate" "cert" {
-  provider            = "aws.us-east-1"
-  domain_name       = "*.${var.domain}"
-  subject_alternative_names = ["${var.domain}"]
-  validation_method = "DNS"
+  provider                  = aws.us-east-1
+  domain_name               = "*.${var.domain}"
+  subject_alternative_names = [var.domain]
+  validation_method         = "DNS"
 
   tags = {
     Environment = "test"
@@ -98,19 +87,19 @@ resource "aws_acm_certificate" "cert" {
 
 # https://www.terraform.io/docs/providers/aws/r/acm_certificate_validation.html
 resource "aws_route53_record" "cert_validation" {
-  depends_on          = ["aws_acm_certificate.cert"]
-  name    = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_name}"
-  type    = "${aws_acm_certificate.cert.domain_validation_options.0.resource_record_type}"
-  zone_id = "${var.zone_id}"
-  records = ["${aws_acm_certificate.cert.domain_validation_options.0.resource_record_value}"]
-  ttl     = 60
+  depends_on = [aws_acm_certificate.cert]
+  name       = aws_acm_certificate.cert.domain_validation_options.0.resource_record_name
+  type       = aws_acm_certificate.cert.domain_validation_options.0.resource_record_type
+  zone_id    = var.zone_id
+  records    = [aws_acm_certificate.cert.domain_validation_options.0.resource_record_value]
+  ttl        = 60
 }
 
 resource "aws_acm_certificate_validation" "cert" {
-  provider            = "aws.us-east-1"
-  depends_on          = ["aws_acm_certificate.cert", "aws_route53_record.cert_validation"]
-  certificate_arn         = "${aws_acm_certificate.cert.arn}"
-  validation_record_fqdns = ["${aws_route53_record.cert_validation.fqdn}"]
+  provider                = aws.us-east-1
+  depends_on              = [aws_acm_certificate.cert, aws_route53_record.cert_validation]
+  certificate_arn         = aws_acm_certificate.cert.arn
+  validation_record_fqdns = [aws_route53_record.cert_validation.fqdn]
 }
 
 
@@ -118,11 +107,11 @@ resource "aws_acm_certificate_validation" "cert" {
 # cloudfront
 ####################
 resource "aws_cloudfront_distribution" "website" {
-  depends_on          = ["aws_acm_certificate_validation.cert"]
-  count               = "${length(local.domains)}"
+  depends_on          = [aws_acm_certificate_validation.cert]
+  count               = length(local.domains)
   enabled             = true
-  aliases             = ["${element(local.domains, count.index)}"]
-  default_root_object = "${element(local.domains, count.index) == var.domain ? "index.html" : ""}"
+  aliases             = [element(local.domains, count.index)]
+  default_root_object = element(local.domains, count.index) == var.domain ? "index.html" : ""
 
   price_class      = "PriceClass_200"
   retain_on_delete = true
@@ -131,7 +120,7 @@ resource "aws_cloudfront_distribution" "website" {
   origin {
     # http://example.com.s3-website-eu-west-1.amazonaws.com/
     # https://s3-eu-west-1.amazonaws.com/example.com/index.html
-    domain_name = "${element(local.website_endpoints, count.index)}"
+    domain_name = element(local.website_endpoints, count.index)
 
     origin_id = "S3-${element(local.domains, count.index)}"
 
@@ -154,7 +143,7 @@ resource "aws_cloudfront_distribution" "website" {
     allowed_methods  = ["HEAD", "GET", "OPTIONS"]
     cached_methods   = ["HEAD", "GET", "OPTIONS"]
     target_origin_id = "S3-${element(local.domains, count.index)}"
-    compress         = "${var.enable_gzip}"
+    compress         = var.enable_gzip
 
     forwarded_values {
       query_string = false
@@ -165,9 +154,9 @@ resource "aws_cloudfront_distribution" "website" {
     }
 
     viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = "${var.cdn_min_ttl}"
-    default_ttl            = "${var.cdn_default_ttl}"
-    max_ttl                = "${var.cdn_max_ttl}"
+    min_ttl                = var.cdn_min_ttl
+    default_ttl            = var.cdn_default_ttl
+    max_ttl                = var.cdn_max_ttl
   }
 
   restrictions {
@@ -177,16 +166,16 @@ resource "aws_cloudfront_distribution" "website" {
   }
 
   viewer_certificate {
-    acm_certificate_arn      = "${aws_acm_certificate.cert.arn}"
+    acm_certificate_arn      = aws_acm_certificate.cert.arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1"
   }
 }
 
 resource "aws_route53_health_check" "health_check" {
-  depends_on        = ["aws_route53_record.A"]
-  count             = "${var.enable_health_check ? 1 : 0}"
-  fqdn              = "${var.domain}"
+  depends_on        = [aws_route53_record.A]
+  count             = var.enable_health_check ? 1 : 0
+  fqdn              = var.domain
   port              = 80
   type              = "HTTP"
   resource_path     = "/"
@@ -194,13 +183,13 @@ resource "aws_route53_health_check" "health_check" {
   request_interval  = "30"
 
   tags = {
-    Name = "${var.domain}"
+    Name = var.domain
   }
 }
 
 resource "aws_cloudwatch_metric_alarm" "health_check_alarm" {
-  provider            = "aws.us-east-1"
-  count               = "${var.enable_health_check ? 1 : 0}"
+  provider            = aws.us-east-1
+  count               = var.enable_health_check ? 1 : 0
   alarm_name          = "${var.domain}-health-check"
   comparison_operator = "LessThanThreshold"
   evaluation_periods  = "1"
@@ -210,11 +199,11 @@ resource "aws_cloudwatch_metric_alarm" "health_check_alarm" {
   statistic           = "Minimum"
   threshold           = "1.0"
   alarm_description   = "This metric monitors the health of the endpoint"
-  ok_actions          = "${var.health_check_alarm_sns_topics}"
-  alarm_actions       = "${var.health_check_alarm_sns_topics}"
+  ok_actions          = var.health_check_alarm_sns_topics
+  alarm_actions       = var.health_check_alarm_sns_topics
   treat_missing_data  = "breaching"
 
-  dimensions {
-    HealthCheckId = "${aws_route53_health_check.health_check.id}"
+  dimensions = {
+    HealthCheckId = aws_route53_health_check.health_check[0].id
   }
 }
