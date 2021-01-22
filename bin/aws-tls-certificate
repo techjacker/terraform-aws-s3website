@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-. '.env'
-
 if [[ -z $DOMAIN ]]; then
 	echo "Must specify bucket/domain in .env file."
 	echo "Exiting..."
