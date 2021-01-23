@@ -11,5 +11,5 @@ variable "mx" {
 }
 
 variable "mx_spf" {}
-variable "mx_dkim" {}
+variable "mx_txt" {}
 variable "mx_dmarc" {}

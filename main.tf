@@ -21,6 +21,6 @@ module "mx" {
   domain   = var.domain
   mx       = var.mx
   mx_spf   = var.mx_spf
-  mx_dkim  = var.mx_dkim
+  mx_txt   = var.mx_txt
   mx_dmarc = var.mx_dmarc
 }
