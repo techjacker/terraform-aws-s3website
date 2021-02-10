@@ -3,7 +3,7 @@ resource "aws_route53_record" "mx_txt" {
   name    = var.domain
   type    = "TXT"
   ttl     = "300"
-  records = [var.mx_txt, var.mx_spf]
+  records = [var.mx_txt, var.mx_spf, "google-site-verification=${var.google_site_verification}"]
 }
 
 resource "aws_route53_record" "mx_dkim_arc" {
@@ -16,8 +16,6 @@ resource "aws_route53_record" "mx_dkim_arc" {
     "key${count.index + 1}.${var.domain}._domainkey.migadu.com."
   ]
 }
-
-
 
 resource "aws_route53_record" "mx" {
   zone_id = var.zone_id
