@@ -1,7 +1,5 @@
-lockfile: tf-init
-	@terraform providers lock \
-  -platform=linux_amd64 \
-  -platform=darwin_amd64
+lockfiles: init
+	@./bin/lockfiles
 
 init:
 	@terraform init -upgrade
@@ -12,4 +10,4 @@ plan:
 apply: plan
 	@terraform apply tf.plan
 
-.PHONY: plan apply init lockfile
+.PHONY: plan apply init lockfiles

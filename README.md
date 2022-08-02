@@ -1,4 +1,5 @@
-# Terraform S3 Website & MX Records Modules
+# Terraform S3 Website & MX
+Provisions S3 website and MX records.
 
 ## Usage Guide
 ### 1. Update `terraform.tfvars` with domain
@@ -37,14 +38,16 @@ $ brew install tflint
 $ tflint --init
 $ pre-commit install
 ```
-### 3. [Add checksums for all platforms to all terraform lock files](https://www.terraform.io/language/files/dependency-lock#new-provider-package-checksums)
+### 3. Update Lockfiles
+Add checksums for all platforms to [terraform lock files](https://www.terraform.io/language/files/dependency-lock#new-provider-package-checksums)
 ```
-$ make tf-lockfile
+$ make lockfiles
 ```
 ### 4. Run lint on all files
 ```
 $ pre-commit run --all-files
 ```
+
 
 -------------------------------------------
 

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+DIRS_UPDATE=("." "dnszone" "mx" "s3website")
+
+run() {
+	for d in "${DIRS_UPDATE[@]}"; do
+		updateLockfile "$d"
+	done
+}
+
+updateLockfile() {
+  pushd "$1" || exit 1
+  terraform providers lock \
+    -platform=linux_amd64 \
+    -platform=darwin_amd64
+  popd || exit
+}
+
+run
