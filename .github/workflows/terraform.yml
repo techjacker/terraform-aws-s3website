@@ -1,5 +1,8 @@
 name: Terraform
 
+env:
+  AWS_ACCOUNT_ID: 985486441319
+
 on:
   push:
     branches:
@@ -11,7 +14,6 @@ on:
     paths:
       - .github/workflows/terraform.yaml
       - "**.tf"
-
 permissions:
   id-token: write # required for assumewebidentity AWS auth
   contents: read # This is required for actions/checkout@v2
@@ -32,7 +34,8 @@ jobs:
       with:
         aws-region: eu-west-2
         role-session-name: githubactions
-        role-to-assume: arn:aws:iam::985486441319:role/terraform-github-actions-main
+        # TODO: check github environment variable names
+        role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.github_repo_name }}-main
 
     - name: Configure AWS credentials
       if: github.event_name == 'pull_request'
@@ -40,7 +43,7 @@ jobs:
       with:
         aws-region: eu-west-2
         role-session-name: githubactions
-        role-to-assume: arn:aws:iam::985486441319:role/terraform-github-actions-prs
+        role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ env.github_repo_name }}-prs
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1

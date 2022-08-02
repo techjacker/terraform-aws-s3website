@@ -1,20 +1,20 @@
-variable "zone_id" {
+variable zone_id {
   description = "route53 hosted zone id"
 }
 
-variable "domain" {
+variable domain {
   description = "route53 hosted zone domain name"
 }
 
-variable "mx" {
+variable mx {
   type = list(string)
 }
 
-variable "mx_spf" {}
-variable "mx_txt" {}
-variable "mx_dmarc" {}
+variable mx_spf {}
+variable mx_txt {}
+variable mx_dmarc {}
 
-variable "google_site_verification" {
+variable google_site_verification {
   description = "DNS TXT record value to create for google site verification"
   default     = ""
 }
