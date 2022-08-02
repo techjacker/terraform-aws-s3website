@@ -6,6 +6,7 @@ resource "aws_route53_record" "mx_txt" {
   records = [var.mx_txt, var.mx_spf, "google-site-verification=${var.google_site_verification}"]
 }
 
+# Migadu specific -> TODO: make generic
 resource "aws_route53_record" "mx_dkim_arc" {
   count   = 3
   zone_id = var.zone_id

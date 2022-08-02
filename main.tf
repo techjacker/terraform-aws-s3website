@@ -4,9 +4,10 @@ module "dnszone" {
 }
 
 module "s3website" {
+  count = var.enable_website ? 1 : 0
   source                        = "./s3website"
   domain                        = var.domain
-  zone_id                       = var.route53_zone_id
+  zone_id                       = module.dnszone.zone_id
   cdn_min_ttl                   = var.cdn_min_ttl
   cdn_default_ttl               = var.cdn_default_ttl
   cdn_max_ttl                   = var.cdn_max_ttl
@@ -17,7 +18,7 @@ module "s3website" {
 
 module "mx" {
   source   = "./mx"
-  zone_id  = var.route53_zone_id
+  zone_id  = module.dnszone.zone_id
   domain   = var.domain
   mx       = var.mx
   mx_spf   = var.mx_spf

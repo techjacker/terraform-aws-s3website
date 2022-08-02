@@ -1,4 +1,13 @@
 ####################
+# bool vars
+####################
+variable enable_website {
+  type        = bool
+  default     = false
+  description = "Enable the website (you need to have plugged in route53 zone nameservers into your domain registrar prior to enabling this)"
+}
+
+####################
 # S3Website module
 ####################
 variable "domain" {

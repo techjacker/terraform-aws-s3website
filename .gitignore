@@ -1,4 +1,13 @@
-*.sublime-workspace
+tf.plan
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
 .env
 # Created by https://www.gitignore.io/api/terraform
 
@@ -7,6 +16,5 @@
 .terraform
 terraform.tfstate
 terraform.tfstate.backup
-*.tfvars
 
 # End of https://www.gitignore.io/api/terraform

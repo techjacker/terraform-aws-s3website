@@ -1,23 +1,3 @@
-provider "aws" {
-  alias  = "us-east-1"
-  region = "us-east-1"
-  # version = "~> 2.0"
-}
-
-locals {
-  www_domain = "www.${var.domain}"
-
-  domains = [
-    var.domain,
-    local.www_domain,
-  ]
-
-  website_endpoints = [
-    aws_s3_bucket.main.website_endpoint,
-    aws_s3_bucket.redirect.website_endpoint,
-  ]
-}
-
 ####################
 # s3
 # http://example.com.s3-website-eu-west-1.amazonaws.com/

@@ -1,0 +1,35 @@
+name: Linting
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - .github/workflows/lint.yaml
+      - "**.tf"
+      - ".tflint.hcl"
+      - ".pre-commit-config.yaml"
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '1.17'
+        check-latest: true
+    - uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ~1.2.0
+    - uses: actions/cache@v2
+      name: Cache plugin dir
+      with:
+        path: ~/.tflint.d/plugins
+        key: tflint-${{ hashFiles('.tflint.hcl') }}
+    - uses: terraform-linters/setup-tflint@v1
+    - name: Init TFLint
+      run: tflint --init
+    - uses: actions/setup-python@v2
+    - uses: pre-commit/action@v2.0.3

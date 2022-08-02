@@ -1,19 +1,52 @@
 repos:
-    - repo: https://github.com/antonbabenko/pre-commit-terraform.git
-      rev: v1.45.0
-      hooks:
-          - id: terraform_fmt
 
-    - repo: git://github.com/pre-commit/pre-commit-hooks
-      rev: v3.4.0
-      hooks:
-          - id: check-added-large-files
-          - id: check-case-conflict
-          - id: check-json
-          - id: check-merge-conflict
-          - id: check-yaml
-          - id: debug-statements
-          - id: detect-private-key
-          - id: double-quote-string-fixer
-          - id: forbid-new-submodules
-          - id: trailing-whitespace
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.2.0
+    hooks:
+      - id: detect-private-key
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-executables-have-shebangs
+      - id: detect-private-key
+      - id: forbid-new-submodules
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-xml
+      - id: check-json
+        exclude: .vscode/launch.json
+      - id: check-ast
+      - id: name-tests-test
+
+  - repo: https://github.com/sirosen/check-jsonschema
+    rev: 0.15.0
+    hooks:
+      - id: check-github-workflows
+
+  - repo: https://github.com/terraform-docs/terraform-docs
+    rev: v0.16.0
+    hooks:
+      - id: terraform-docs-go
+        name: terraform-github
+        args: ["markdown", "table", "--output-file", "README.md", "."]
+
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.72.1
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+      - id: terraform_tflint
+        exclude: workspaces|vars
+        args:
+          - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
+          - --args=--only=terraform_deprecated_interpolation
+          - --args=--only=terraform_deprecated_index
+          - --args=--only=terraform_unused_declarations
+          - --args=--only=terraform_comment_syntax
+          - --args=--only=terraform_documented_outputs
+          - --args=--only=terraform_documented_variables
+          - --args=--only=terraform_typed_variables
+          - --args=--only=terraform_module_pinned_source
+          - --args=--only=terraform_naming_convention
+          - --args=--only=terraform_required_version
+          - --args=--only=terraform_standard_module_structure
+          - --args=--only=terraform_workspace_remote
